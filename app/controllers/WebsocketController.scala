@@ -52,7 +52,7 @@ class WebsocketController @Inject()(cc: ControllerComponents)
     Flow.fromSinkAndSource(Sink.ignore, chatSource)
   }
 
-  def chat: WebSocket = {
+  def data: WebSocket = {
     WebSocket.acceptOrResult[WSMessage, WSMessage] {
       case rh if sameOriginCheck(rh) =>
         Future.successful(userFlow).map { flow =>

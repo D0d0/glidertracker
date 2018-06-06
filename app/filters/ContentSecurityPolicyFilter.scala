@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 class ContentSecurityPolicyFilter @Inject()(implicit ec: ExecutionContext) extends EssentialFilter {
 
   override def apply(next: EssentialAction): EssentialAction = EssentialAction { request: RequestHeader =>
-    val webSocketUrl = routes.WebsocketController.chat().webSocketURL()(request)
+    val webSocketUrl = routes.WebsocketController.data().webSocketURL()(request)
     next(request).map { result =>
       result.withHeaders("Content-Security-Policy" -> s"connect-src 'self' $webSocketUrl")
     }

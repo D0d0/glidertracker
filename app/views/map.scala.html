@@ -32,7 +32,7 @@
                         center: {lat: -34.397, lng: 150.644},
                         zoom: 8
                     });
-                    var socket = new WebSocket("ws://localhost:9001/chat");
+                    var socket = new WebSocket("ws://localhost:9001/map/data");
                     socket.onmessage = function (event) {
                         var obj = JSON.parse(event.data),
                                 marker
@@ -43,7 +43,13 @@
                             marker = new google.maps.Marker({
                                 position: obj,
                                 map: map,
-                                title: obj.id
+                                title: obj.id,
+                                icon: {
+                                    url: "@routes.Assets.versioned("images/glider.svg")",
+                                    scaledSize: new google.maps.Size(25, 25),
+                                    origin: new google.maps.Point(0, 0),
+                                    anchor: new google.maps.Point(0, 0)
+                                }
                             });
 
                             markers[obj.id] = marker
