@@ -10,7 +10,9 @@ import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, Sink}
 import javax.inject._
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import play.api.libs.json._
 import play.api.mvc._
+import utils.parser.Parser
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +36,14 @@ class WebsocketController @Inject()(cc: ControllerComponents)
     val sink = BroadcastHub.sink[WSMessage]
     val source = Consumer.plainSource(consumerSettings, Subscriptions.topics("aircraft"))
       .log("message")
-      .map(x => x.value())
+      .map(x => Parser.toAircraftData(x.value()))
+      .map(x => {
+        JsObject(Seq(
+          "id" -> JsString(x.id),
+          "lat" -> JsNumber(x.latitude),
+          "lng" -> JsNumber(x.longitude)
+        )).toString()
+      })
 
     source.toMat(sink)(Keep.both).run()
   }
@@ -60,6 +69,10 @@ class WebsocketController @Inject()(cc: ControllerComponents)
           Left(Forbidden("forbidden"))
         }
     }
+  }
+
+  def map = Action {
+    Ok(views.html.map())
   }
 
   private def sameOriginCheck(implicit rh: RequestHeader): Boolean = {
