@@ -5,6 +5,6 @@ if (window.console) {
 window.onload = function () {
     var socket = new WebSocket("ws://localhost:9001/chat");
     socket.onmessage = function (event) {
-        console.log(event);
+        console.log(event.data);
     }
 };
