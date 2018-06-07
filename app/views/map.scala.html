@@ -6,7 +6,7 @@
         <title>Simple Map</title>
         <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
-        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/KalmanFilter.js")" type="text/javascript"></script>
         <style>
                 /* Always set the map height explicitly to define the size of the div
                  * element that contains the map. */
@@ -40,7 +40,7 @@
                         if (markerObj) {
                             marker = markerObj.marker;
                             var lastPosition = markerObj.path.slice(-1)[0],
-                                    newPosition = new google.maps.LatLng(obj.lat, obj.lng),
+                                    newPosition = new google.maps.LatLng(markerObj.kalman.lat.filter(obj.lat), markerObj.kalman.lng.filter(obj.lng)),
                                     icon = marker.getIcon();
                             marker.setPosition(newPosition);
                             icon.rotation = google.maps.geometry.spherical.computeHeading(lastPosition, marker.getPosition());
@@ -60,7 +60,7 @@
                                     anchor: new google.maps.Point(35, 35)
                                 }
                             });
-                            marker.addListener('click', function() {
+                            marker.addListener('click', function () {
                                 var markerObj = markers[obj.id];
                                 if (markerObj) {
                                     var flightPath = new google.maps.Polyline({
@@ -77,7 +77,11 @@
 
                             markers[obj.id] = {
                                 marker: marker,
-                                path: [new google.maps.LatLng(obj.lat, obj.lng)]
+                                path: [new google.maps.LatLng(obj.lat, obj.lng)],
+                                kalman: {
+                                    lat: KalmanFilter.constructor(),
+                                    lng: KalmanFilter.constructor()
+                                }
                             }
                         }
                     }
