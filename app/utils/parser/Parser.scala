@@ -51,7 +51,7 @@ object Parser {
     }
   }
 
-  case class AircraftData(id: String, longitude: Double, latitude: Double)
+  final  case class AircraftData(id: String = "", longitude: Double = 0, latitude: Double = 0, track: Int = 0)
 
   implicit def toAircraftData(s: String): AircraftData = {
     val positionMatcher = aprsPositionPattern.matcher(s)
@@ -66,16 +66,15 @@ object Parser {
 
         val longitudeSign: Double = if (positionMatcher.group("longitudeSign") == "W") -1 else 1
         val longitude: Double = longitudeSign * (AprsUtils.dmsToDeg(positionMatcher.group("longitude").toDouble / 100) +
-          (if (positionMatcher.group("posExtension") == null) 0
-          else positionMatcher.group("longitudeEnhancement").toDouble / 1000 / 60))
+          (if (positionMatcher.group("posExtension") == null) 0 else positionMatcher.group("longitudeEnhancement").toDouble / 1000 / 60))
+        val track = if (positionMatcher.group("course") == null) 0 else positionMatcher.group("course").toInt
 
-
-        AircraftData(aircraftMatcher.group("id"), longitude, latitude)
+        AircraftData(aircraftMatcher.group("id"), longitude, latitude, track)
       } else {
-        AircraftData("", 0, 0)
+        AircraftData()
       }
     } else {
-      AircraftData("", 0, 0)
+      AircraftData()
     }
   }
 }

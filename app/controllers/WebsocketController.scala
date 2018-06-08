@@ -13,7 +13,6 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.libs.json._
 import play.api.mvc._
 import utils.parser.Parser
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -41,7 +40,8 @@ class WebsocketController @Inject()(cc: ControllerComponents)
         JsObject(Seq(
           "id" -> JsString(x.id),
           "lat" -> JsNumber(x.latitude),
-          "lng" -> JsNumber(x.longitude)
+          "lng" -> JsNumber(x.longitude),
+          "track" -> JsNumber(x.track)
         )).toString()
       })
 
